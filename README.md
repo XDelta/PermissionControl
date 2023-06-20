@@ -1,6 +1,7 @@
 ﻿# PermissionControl
 
-A [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader) mod for [Neos VR](https://neos.com/). Allows more fine control over permission overrides
+A [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader) mod for [Neos VR](https://neos.com/).
+Allows more fine control over permission overrides such as adding and removing overrides individually, even for users who aren't in the session. A solution for https://github.com/Neos-Metaverse/NeosPublic/issues/3768
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader).
