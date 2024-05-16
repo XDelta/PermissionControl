@@ -1,77 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PermissionControl</RootNamespace>
     <AssemblyName>PermissionControl</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <LangVersion>latestMajor</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>10.0</LangVersion>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-    <ProjectGuid>{7C71EE1D-415E-4AEE-ADC0-6FD8E3E3CD7D}</ProjectGuid>
-    <!-- If you don't want to provide a NeosPath in dotnet build, you can specify one here -->
-    <!-- <NeosPath Condition="'$(NeosPath)'==''"></NeosPath> -->
+    <CopyLocal>false</CopyLocal>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(NeosPath)'==''">
-    <!-- Windows steam -->
-    <NeosPath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\NeosVR\')">C:\Program Files (x86)\Steam\steamapps\common\NeosVR\</NeosPath>
-    <!-- Windows standalone -->
-    <NeosPath Condition="Exists('C:\Neos\app\')">C:\Neos\app\</NeosPath>
-    <!-- Linux steam -->
-    <NeosPath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/NeosVR/')">$(HOME)/.steam/steam/steamapps/common/NeosVR/</NeosPath>
+  <PropertyGroup Condition="'$(ResonitePath)'==''">
+    <!-- If you don't want to provide a ResonitePath in dotnet build, you can specify one here -->
+    <ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
+    <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemDefinitionGroup>
-    <Reference>
-      <Private>false</Private>
-    </Reference>
-  </ItemDefinitionGroup>
-  <ItemGroup>
+    <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>$(NeosPath)\nml_libs\0Harmony.dll</HintPath>
+      <HintPath>$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="CloudX.Shared">
-      <HintPath>$(NeosPath)\Neos_Data\Managed\CloudX.Shared.dll</HintPath>
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Elements.Core">
+      <HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="FrooxEngine">
-      <HintPath>$(NeosPath)\Neos_Data\Managed\FrooxEngine.dll</HintPath>
+      <HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="NeosModLoader">
-      <HintPath>$(NeosPath)\Libraries\NeosModLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="BaseX">
-      <HintPath>$(NeosPath)\Neos_Data\Managed\BaseX.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PermissionControl.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="README.md" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
