@@ -1,22 +1,22 @@
 using System;
 using System.Reflection;
 
-using BaseX;
+using Elements.Core;
 using FrooxEngine;
 using FrooxEngine.UIX;
 using HarmonyLib;
-using NeosModLoader;
+using ResoniteModLoader;
 
 namespace PermissionControl;
-public class PermissionControl : NeosMod {
+public class PermissionControl : ResoniteMod {
 	public override string Name => "PermissionControl";
 	public override string Author => "Delta";
-	public override string Version => "1.0.0";
+	public override string Version => "2.0.0";
 	public override string Link => "https://github.com/XDelta/PermissionControl";
 
 	[AutoRegisterConfigKey]
 	private static readonly ModConfigurationKey<bool> Enabled = new ModConfigurationKey<bool>("Enabled", "Enable Mod", () => true);
-		
+
 	[AutoRegisterConfigKey]
 	private static readonly ModConfigurationKey<bool> ShowDebugInfo = new ModConfigurationKey<bool>("ShowDebugInfo", "Show permission debugging info and RefIDs for Roles", () => false);
 
@@ -51,7 +51,7 @@ public class PermissionControl : NeosMod {
 		private static TextField userIDTextField;
 		public static bool Prefix(SessionControlDialog __instance) {
 			if (Config.GetValue(Enabled)) {
-				RectTransform modalOverlay = __instance.Slot.OpenModalOverlay(new float2(0.7f, 0.7f), false);
+				RectTransform modalOverlay = __instance.Slot.OpenModalOverlay(new float2(0.7f, 0.7f));
 				OpenOverrideEditor(modalOverlay);
 				return false;
 			} else {
@@ -73,7 +73,7 @@ public class PermissionControl : NeosMod {
 			ui.NestInto(top);
 			ui.VerticalLayout(4f, 0f, null).ForceExpandHeight.Value = false;
 			RectTransform sp = ui.Spacer(3f);
-			sp.Slot.AttachComponent<Image>().Tint.Value = new color(1f, 1f, 1f, 0.5f);
+			sp.Slot.AttachComponent<Image>().Tint.Value = new colorX(1f, 1f, 1f, 0.5f);
 			if (Config.GetValue(ShowDebugInfo)) {
 				ui.TextField($"Debug Info:  World: {focusedWorld.Name}, RolesVersion: {focusedWorld.Permissions.RolesVersion}"); //Roles version changes when adding/removing actual role options. ~129 for a default world
 			}
@@ -113,10 +113,10 @@ public class PermissionControl : NeosMod {
 			ui.Style.MinHeight = 24f;
 			//TODO Rebuild on permission changes
             foreach (var entry in focusedWorld.Permissions.DefaultUserPermissions) {
-				ui.Style.ButtonColor = new color(0.08f);
+				ui.Style.ButtonColor = new colorX(0.08f);
 				var UserEntry = ui.Next(entry.Key); //UserID
 				if (currentLine % 2 == 1) {
-					ui.Style.ButtonColor = new color(0.16f);
+					ui.Style.ButtonColor = new colorX(0.16f);
 				}
 				ui.NestInto(UserEntry);
 				ui.HorizontalLayout(1f);
@@ -129,14 +129,13 @@ public class PermissionControl : NeosMod {
 					}
 				} catch (Exception) {
 					AddLabel(ui, "[Invalid Role]");
-					Msg("");
 				}
-				ui.Button("Remove", new color(0.5f, 0.1f, 0.1f), new ButtonEventHandler<string>(ClearSingleUserPermissionOverrides), entry.Key);
+				ui.Button("Remove", new colorX(0.5f, 0.1f, 0.1f), new ButtonEventHandler<string>(ClearSingleUserPermissionOverrides), entry.Key);
 				ui.NestOut();
 				ui.NestOut();
 				currentLine += 1;
 			}
-			ui.Style.ButtonColor = new color(0.08f);
+			ui.Style.ButtonColor = new colorX(0.08f);
 			ui.NestOut();
 		}
 
@@ -144,7 +143,7 @@ public class PermissionControl : NeosMod {
 			ui.Next("Button");
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			Button button = ui.Current.AttachComponent<Button>();
-			ui.Current.AttachComponent<FriendLink>().UserId.Value = user;
+			ui.Current.AttachComponent<ContactLink>().UserId.Value = user;
 			ui.Nest();
 				ui.Text(user);
 			ui.NestOut();
@@ -158,7 +157,7 @@ public class PermissionControl : NeosMod {
 			ui.NestOut();
 		}
 
-		[SyncMethod]
+		[SyncMethod(typeof(Delegate))]
 		public static void ClearUserPermissionOverrides(IButton button, ButtonEventData eventData) {
 			World focusedWorld = button.Slot.Engine.WorldManager.FocusedWorld;
 			focusedWorld.RunSynchronously(delegate {
@@ -169,7 +168,7 @@ public class PermissionControl : NeosMod {
 			}, false, null, false);
 		}
 
-		[SyncMethod]
+		[SyncMethod(typeof(Delegate))]
 		public static void ClearSingleUserPermissionOverrides(IButton button, ButtonEventData eventData, string user) {
 			World focusedWorld = button.Slot.Engine.WorldManager.FocusedWorld;
 			focusedWorld.RunSynchronously(delegate {
@@ -180,7 +179,7 @@ public class PermissionControl : NeosMod {
 			}, false, null, false);
 		}
 
-		[SyncMethod]
+		[SyncMethod(typeof(Delegate))]
 		public static void AddSingleUserPermissionOverride(IButton button, ButtonEventData eventData, int permissionSet) {
 			World focusedWorld = button.Slot.Engine.WorldManager.FocusedWorld;
 			focusedWorld.RunSynchronously(delegate {
