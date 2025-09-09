@@ -2,9 +2,12 @@ using System;
 using System.Reflection;
 
 using Elements.Core;
+
 using FrooxEngine;
 using FrooxEngine.UIX;
+
 using HarmonyLib;
+
 using ResoniteModLoader;
 
 namespace PermissionControl;
@@ -16,35 +19,35 @@ public class PermissionControl : ResoniteMod {
 	public override string Link => "https://github.com/XDelta/PermissionControl";
 
 	[AutoRegisterConfigKey]
-	private static readonly ModConfigurationKey<bool> Enabled = new ModConfigurationKey<bool>("Enabled", "Enable Mod", () => true);
+	private static readonly ModConfigurationKey<bool> Enabled = new("Enabled", "Enable Mod", () => true);
 
 	[AutoRegisterConfigKey]
-	private static readonly ModConfigurationKey<bool> ShowDebugInfo = new ModConfigurationKey<bool>("ShowDebugInfo", "Show permission debugging info and RefIDs for Roles", () => false);
+	private static readonly ModConfigurationKey<bool> ShowDebugInfo = new("ShowDebugInfo", "Show permission debugging info and RefIDs for Roles", () => false);
 
 	private static ModConfiguration Config;
 
 	public override void OnEngineInit() {
-		Config = GetConfiguration();
+		Config = GetConfiguration()!;
 		Config.Save(true);
-		Harmony harmony = new Harmony("net.deltawolf.PermissionControl");
+		Harmony harmony = new("net.deltawolf.PermissionControl");
 		harmony.PatchAll();
 	}
 
 	[HarmonyPatch(typeof(SessionControlDialog), "GenerateUi")]
 	class SessionControlDialog_GenerateUi_Patch {
-		static void Postfix(SessionControlDialog __instance, SessionControlDialog.Tab tab) {
-            if (tab == SessionControlDialog.Tab.Permissions) {
-                // Find the SyncRef<Button> for the permissionOverridesButton
-                if (__instance.GetType()
-                    .GetField("_permissionOverridesButton", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
-                    // Change the localeString of the permissionOverridesButton
-                    if (Config.GetValue(Enabled)) {
-                        permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().Content.Value = "Edit Permission Overrides";
-                    }
-                }
-            }
-        }
+		public static void Postfix(SessionControlDialog __instance, SessionControlDialog.Tab tab) {
+			if (tab == SessionControlDialog.Tab.Permissions) {
+				// Find the SyncRef<Button> for the permissionOverridesButton
+				if (__instance.GetType()
+					.GetField("_permissionOverridesButton", BindingFlags.NonPublic | BindingFlags.Instance)
+					.GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
+					// Change the localeString of the permissionOverridesButton
+					if (Config.GetValue(Enabled)) {
+						permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().Content.Value = "Edit Permission Overrides";
+					}
+				}
+			}
+		}
 	}
 
 	[HarmonyPatch(typeof(SessionControlDialog), "OnClearUserPermissionOverrides")]
@@ -61,42 +64,43 @@ public class PermissionControl : ResoniteMod {
 		}
 
 		public static void OpenOverrideEditor(RectTransform rect) {
-            World focusedWorld = rect.Slot.Engine.WorldManager.FocusedWorld;
-			UIBuilder ui = new UIBuilder(rect.Slot, null);
-			RadiantUI_Constants.SetupDefaultStyle(ui, false);
+			World focusedWorld = rect.Slot.Engine.WorldManager.FocusedWorld;
+			UIBuilder ui = new(rect.Slot);
+			RadiantUI_Constants.SetupDefaultStyle(ui);
 			ui.Style.MinHeight = 24f;
 			ui.HorizontalHeader(48f, out RectTransform header, out RectTransform content);
 			ui.ForceNext = header;
-			ui.Text("Edit Permission Overrides", true, null, true, null);
+			ui.Text("Edit Permission Overrides");
 			content.AddFixedPadding(8f, 0f, 0f, 0f);
 			ui.NestInto(content);
 			ui.SplitVertically(0.20f, out RectTransform top, out RectTransform bottom, 0.02f);
 			ui.NestInto(top);
-			ui.VerticalLayout(4f, 0f, null).ForceExpandHeight.Value = false;
+			ui.VerticalLayout(4f).ForceExpandHeight.Value = false;
 			RectTransform sp = ui.Spacer(3f);
 			sp.Slot.AttachComponent<Image>().Tint.Value = new colorX(1f, 1f, 1f, 0.5f);
 			if (Config.GetValue(ShowDebugInfo)) {
-				ui.TextField($"Debug Info:  World: {focusedWorld.Name}, RolesVersion: {focusedWorld.Permissions.RolesVersion}"); //Roles version changes when adding/removing actual role options. ~129 for a default world
+				ui.TextField($"Debug Info:  World: {focusedWorld.Name}, RolesVersion: {focusedWorld.Permissions.RolesVersion}");
+				//Roles version changes when adding/removing actual role options. ~129 for a default world
 			}
 			ui.NestInto(ui.Next("Roles"));
 			ui.SplitHorizontally(0.25f, out RectTransform left, out RectTransform right, 0.01f);
 			ui.NestInto(left);
-			userIDTextField = ui.TextField(null);
-            userIDTextField.Text.NullContent.Value = "<i>U-ID</i>";
+			userIDTextField = ui.TextField();
+			userIDTextField.Text.NullContent.Value = "<i>U-ID</i>";
 			userIDTextField.Editor.Target.FinishHandling.Value = TextEditor.FinishAction.NullOnWhitespace;
 			userIDTextField.Text.Align = Alignment.MiddleLeft;
 			ui.NestOut();
 			ui.NestInto(right);
-            ui.HorizontalLayout(1f);
-            for (int i = 0; i < focusedWorld.Permissions.Roles.Count; i++) {
+			ui.HorizontalLayout(1f);
+			for (int i = 0; i < focusedWorld.Permissions.Roles.Count; i++) {
 				PermissionSet permissionSet = focusedWorld.Permissions.Roles[i];
-				Button button = ui.Button<int>(permissionSet.RoleName.Value, ui.Style.ButtonColor, new ButtonEventHandler<int>(AddSingleUserPermissionOverride), i, 0f);
+				Button button = ui.Button<int>(permissionSet.RoleName.Value, ui.Style.ButtonColor, new ButtonEventHandler<int>(AddSingleUserPermissionOverride), i);
 			}
-            ui.NestOut();
 			ui.NestOut();
-            ui.NestOut();
+			ui.NestOut();
+			ui.NestOut();
 
-            ui.Button("Clear All User Overrides", new ButtonEventHandler(ClearUserPermissionOverrides));
+			ui.Button("Clear All User Overrides", new ButtonEventHandler(ClearUserPermissionOverrides));
 			ui.CurrentRect.Slot.AttachComponent<LayoutElement>().MinHeight.Value = 24f;
 			ui.NestInto(bottom);
 
@@ -109,11 +113,11 @@ public class PermissionControl : ResoniteMod {
 			//List each override entry
 			var currentLine = 0;
 			ui.ScrollArea(new Alignment?(Alignment.TopCenter));
-			ui.VerticalLayout(4f, 4f, null);
+			ui.VerticalLayout(4f, 4f);
 			ui.FitContent(SizeFit.Disabled, SizeFit.PreferredSize);
 			ui.Style.MinHeight = 24f;
 			//TODO Rebuild on permission changes
-            foreach (var entry in focusedWorld.Permissions.DefaultUserPermissions) {
+			foreach (var entry in focusedWorld.Permissions.DefaultUserPermissions) {
 				ui.Style.ButtonColor = new colorX(0.08f);
 				var UserEntry = ui.Next(entry.Key); //UserID
 				if (currentLine % 2 == 1) {
@@ -146,7 +150,7 @@ public class PermissionControl : ResoniteMod {
 			Button button = ui.Current.AttachComponent<Button>();
 			ui.Current.AttachComponent<ContactLink>().UserId.Value = user;
 			ui.Nest();
-				ui.Text(user);
+			ui.Text(user);
 			ui.NestOut();
 		}
 
@@ -154,7 +158,7 @@ public class PermissionControl : ResoniteMod {
 			ui.Next("Button");
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			ui.Nest();
-				ui.Text(label);
+			ui.Text(label);
 			ui.NestOut();
 		}
 
@@ -166,7 +170,7 @@ public class PermissionControl : ResoniteMod {
 					return;
 				}
 				focusedWorld.Permissions.DefaultUserPermissions.Clear();
-			}, false, null, false);
+			});
 		}
 
 		[SyncMethod(typeof(Delegate))]
@@ -177,7 +181,7 @@ public class PermissionControl : ResoniteMod {
 					return;
 				}
 				focusedWorld.Permissions.DefaultUserPermissions.Remove(user);
-			}, false, null, false);
+			});
 		}
 
 		[SyncMethod(typeof(Delegate))]
@@ -189,20 +193,20 @@ public class PermissionControl : ResoniteMod {
 				}
 
 				string user = userIDTextField.Text.Content.Value;
+				user = user.Trim();
 				if (string.IsNullOrEmpty(user)) {
 					return;
 				}
-				user = user.Trim();
 				if (user.StartsWith("u-", StringComparison.OrdinalIgnoreCase)) {
-					user = "U-" + user.Substring(2);
+					user = "U-" + user[2..];
 				} else {
-                    user = "U-" + user;
-                }
+					user = "U-" + user;
+				}
 
 				Msg($"Adding override for {user} as {focusedWorld.Permissions.Roles[permissionSet].RoleName}");
 				focusedWorld.Permissions.DefaultUserPermissions.Remove(user); //Remove any overrides before adding a new one
-                focusedWorld.Permissions.DefaultUserPermissions.Add(user, focusedWorld.Permissions.Roles[permissionSet]);
-			}, false, null, false);
+				focusedWorld.Permissions.DefaultUserPermissions.Add(user, focusedWorld.Permissions.Roles[permissionSet]);
+			});
 		}
 	}
 }
