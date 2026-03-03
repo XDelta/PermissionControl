@@ -12,7 +12,7 @@ using ResoniteModLoader;
 
 namespace PermissionControl;
 public class PermissionControl : ResoniteMod {
-	internal const string VERSION_CONSTANT = "2.0.1";
+	internal const string VERSION_CONSTANT = "2.0.2";
 	public override string Name => "PermissionControl";
 	public override string Author => "Delta";
 	public override string Version => VERSION_CONSTANT;
@@ -54,7 +54,7 @@ public class PermissionControl : ResoniteMod {
 	class SessionControlDialog_Patch {
 		private static TextField userIDTextField;
 		public static bool Prefix(SessionControlDialog __instance) {
-			if (Config.GetValue(Enabled)) {
+			if (Enabled.Value) {
 				RectTransform modalOverlay = __instance.Slot.OpenModalOverlay(new float2(0.7f, 0.7f));
 				OpenOverrideEditor(modalOverlay);
 				return false;
@@ -78,7 +78,7 @@ public class PermissionControl : ResoniteMod {
 			ui.VerticalLayout(4f).ForceExpandHeight.Value = false;
 			RectTransform sp = ui.Spacer(3f);
 			sp.Slot.AttachComponent<Image>().Tint.Value = new colorX(1f, 1f, 1f, 0.5f);
-			if (Config.GetValue(ShowDebugInfo)) {
+			if (ShowDebugInfo.Value) {
 				ui.TextField($"Debug Info:  World: {focusedWorld.Name}, RolesVersion: {focusedWorld.Permissions.RolesVersion}");
 				//Roles version changes when adding/removing actual role options. ~129 for a default world
 			}
