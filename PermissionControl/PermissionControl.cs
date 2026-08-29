@@ -12,7 +12,7 @@ using ResoniteModLoader;
 
 namespace PermissionControl;
 public class PermissionControl : ResoniteMod {
-	internal const string VERSION_CONSTANT = "2.0.2";
+	internal const string VERSION_CONSTANT = "2.0.3";
 	public override string Name => "PermissionControl";
 	public override string Author => "Delta";
 	public override string Version => VERSION_CONSTANT;
@@ -24,7 +24,7 @@ public class PermissionControl : ResoniteMod {
 	[AutoRegisterConfigKey]
 	private static readonly ModConfigurationKey<bool> ShowDebugInfo = new("ShowDebugInfo", "Show permission debugging info and RefIDs for Roles", () => false);
 
-	private static ModConfiguration Config;
+	private static ModConfiguration? Config;
 
 	public override void OnEngineInit() {
 		Config = GetConfiguration()!;
@@ -42,7 +42,7 @@ public class PermissionControl : ResoniteMod {
 					.GetField("_permissionOverridesButton", BindingFlags.NonPublic | BindingFlags.Instance)
 					.GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
 					// Change the localeString of the permissionOverridesButton
-					if (Config.GetValue(Enabled)) {
+					if (Enabled.Value) {
 						permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().Content.Value = "Edit Permission Overrides";
 					}
 				}
@@ -52,7 +52,7 @@ public class PermissionControl : ResoniteMod {
 
 	[HarmonyPatch(typeof(SessionControlDialog), "OnClearUserPermissionOverrides")]
 	class SessionControlDialog_Patch {
-		private static TextField userIDTextField;
+		private static TextField? userIDTextField;
 		public static bool Prefix(SessionControlDialog __instance) {
 			if (Enabled.Value) {
 				RectTransform modalOverlay = __instance.Slot.OpenModalOverlay(new float2(0.7f, 0.7f));
@@ -127,10 +127,10 @@ public class PermissionControl : ResoniteMod {
 				ui.HorizontalLayout(1f);
 				AddFriendLinkButton(ui, entry.Key);
 				try {
-					if (Config.GetValue(ShowDebugInfo)) { //Role Override Name
-						AddLabel(ui, entry.Value.Target.RoleName.Value + " [" + entry.Value + "]");
+					if (ShowDebugInfo.Value) { //Role Override Name
+						AddLabel(ui, entry.Value.RoleName.Value + " [" + entry.Value + "]");
 					} else {
-						AddLabel(ui, entry.Value.Target.RoleName.Value);
+						AddLabel(ui, entry.Value.RoleName.Value);
 					}
 				} catch (Exception) {
 					AddLabel(ui, "[Invalid Role]");
@@ -192,7 +192,7 @@ public class PermissionControl : ResoniteMod {
 					return;
 				}
 
-				string user = userIDTextField.Text.Content.Value;
+				string user = userIDTextField!.Text.Content.Value;
 				user = user.Trim();
 				if (string.IsNullOrEmpty(user)) {
 					return;
