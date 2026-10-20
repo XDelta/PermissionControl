@@ -12,7 +12,7 @@ using ResoniteModLoader;
 namespace PermissionControl;
 
 public class PermissionControl : ResoniteMod {
-	internal const string VERSION_CONSTANT = "2.0.3";
+	internal const string VERSION_CONSTANT = "2.1.0";
 	public override string Name => "PermissionControl";
 	public override string Author => "Delta";
 	public override string Version => VERSION_CONSTANT;
