@@ -1,0 +1,12 @@
+{
+	"localeCode": "en",
+	"authors": ["Delta"],
+	"messages": {
+		"PermissionControl.Edit": "Edit Permission Overrides",
+		"PermissionControl.ClearAll": "Clear All User Overrides",
+		"PermissionControl.NoOverrides": "No Permission Overrides Found",
+		"PermissionControl.InvalidRole": "[Invalid Role]",
+		"PermissionControl.Remove": "Remove",
+		"Dummy": "Dummy"
+	}
+}

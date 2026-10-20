@@ -43,7 +43,7 @@ public class PermissionControl : ResoniteMod {
 					.GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
 					// Change the localeString of the permissionOverridesButton
 					if (Enabled.Value) {
-						permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().Content.Value = "Edit Permission Overrides";
+						permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().LocaleContent = "PermissionControl.Edit".AsLocaleKey();
 					}
 				}
 			}
@@ -70,7 +70,7 @@ public class PermissionControl : ResoniteMod {
 			ui.Style.MinHeight = 24f;
 			ui.HorizontalHeader(48f, out RectTransform header, out RectTransform content);
 			ui.ForceNext = header;
-			ui.Text("Edit Permission Overrides");
+			ui.Text("PermissionControl.Edit".AsLocaleKey());
 			content.AddFixedPadding(8f, 0f, 0f, 0f);
 			ui.NestInto(content);
 			ui.SplitVertically(0.20f, out RectTransform top, out RectTransform bottom, 0.02f);
@@ -100,13 +100,13 @@ public class PermissionControl : ResoniteMod {
 			ui.NestOut();
 			ui.NestOut();
 
-			ui.Button("Clear All User Overrides", new ButtonEventHandler(ClearUserPermissionOverrides));
+			ui.Button("PermissionControl.ClearAll".AsLocaleKey(), new ButtonEventHandler(ClearUserPermissionOverrides));
 			ui.CurrentRect.Slot.AttachComponent<LayoutElement>().MinHeight.Value = 24f;
 			ui.NestInto(bottom);
 
 			//Stop early if no overrides exist
 			if (focusedWorld.Permissions.DefaultUserPermissions.Count < 1) {
-				AddLabel(ui, "No Permission Overrides Found");
+				AddLabel(ui, "PermissionControl.NoOverrides".AsLocaleKey());
 				return;
 			}
 
@@ -133,9 +133,9 @@ public class PermissionControl : ResoniteMod {
 						AddLabel(ui, entry.Value.RoleName.Value);
 					}
 				} catch (Exception) {
-					AddLabel(ui, "[Invalid Role]");
+					AddLabel(ui, "PermissionControl.InvalidRole".AsLocaleKey());
 				}
-				ui.Button("Remove", new colorX(0.5f, 0.1f, 0.1f), new ButtonEventHandler<string>(ClearSingleUserPermissionOverrides), entry.Key);
+				ui.Button("PermissionControl.Remove".AsLocaleKey(), new colorX(0.5f, 0.1f, 0.1f), new ButtonEventHandler<string>(ClearSingleUserPermissionOverrides), entry.Key);
 				ui.NestOut();
 				ui.NestOut();
 				currentLine += 1;
@@ -154,7 +154,7 @@ public class PermissionControl : ResoniteMod {
 			ui.NestOut();
 		}
 
-		public static void AddLabel(UIBuilder ui, string label) {
+		public static void AddLabel(UIBuilder ui, LocaleString label) {
 			ui.Next("Button");
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			ui.Nest();
