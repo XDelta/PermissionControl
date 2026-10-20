@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 using Elements.Core;
@@ -11,6 +10,7 @@ using HarmonyLib;
 using ResoniteModLoader;
 
 namespace PermissionControl;
+
 public class PermissionControl : ResoniteMod {
 	internal const string VERSION_CONSTANT = "2.0.3";
 	public override string Name => "PermissionControl";
@@ -40,7 +40,7 @@ public class PermissionControl : ResoniteMod {
 				// Find the SyncRef<Button> for the permissionOverridesButton
 				if (__instance.GetType()
 					.GetField("_permissionOverridesButton", BindingFlags.NonPublic | BindingFlags.Instance)
-					.GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
+					?.GetValue(__instance) is SyncRef<Button> permissionOverridesButton) {
 					// Change the localeString of the permissionOverridesButton
 					if (Enabled.Value) {
 						permissionOverridesButton.Target.Slot.GetComponentInChildren<Text>().LocaleContent = "PermissionControl.Edit".AsLocaleKey();
@@ -144,15 +144,15 @@ public class PermissionControl : ResoniteMod {
 			ui.NestOut();
 		}
 
-		public static void AddContactLinkButton(UIBuilder ui, string user) {
+		public static void AddContactLinkButton(UIBuilder ui, string userid) {
 			ui.Next("Button");
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			Button button = ui.Current.AttachComponent<Button>();
-			ui.Current.AttachComponent<ContactLink>().UserId.Value = user;
+			ui.Current.AttachComponent<ContactLink>().UserId.Value = userid;
 			var cui = ui.Current.AttachComponent<CloudUserInfo>();
-			cui.UserId.Value = user;
+			cui.UserId.Value = userid;
 			ui.Nest();
-			ui.Text(user).Content.DriveFrom(cui.Username);
+			ui.Text(userid).Content.DriveFrom(cui.Username);
 			ui.NestOut();
 		}
 
@@ -205,7 +205,7 @@ public class PermissionControl : ResoniteMod {
 					user = "U-" + user;
 				}
 
-				Msg($"Adding override for {user} as {focusedWorld.Permissions.Roles[permissionSet].RoleName}");
+				Msg($"Adding permission override for {user} as {focusedWorld.Permissions.Roles[permissionSet].RoleName}");
 				focusedWorld.Permissions.DefaultUserPermissions.Remove(user); //Remove any overrides before adding a new one
 				focusedWorld.Permissions.DefaultUserPermissions.Add(user, focusedWorld.Permissions.Roles[permissionSet]);
 			});
