@@ -149,8 +149,10 @@ public class PermissionControl : ResoniteMod {
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			Button button = ui.Current.AttachComponent<Button>();
 			ui.Current.AttachComponent<ContactLink>().UserId.Value = user;
+			var cui = ui.Current.AttachComponent<CloudUserInfo>();
+			cui.UserId.Value = user;
 			ui.Nest();
-			ui.Text(user);
+			ui.Text(user).Content.DriveFrom(cui.Username);
 			ui.NestOut();
 		}
 
