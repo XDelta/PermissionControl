@@ -125,7 +125,7 @@ public class PermissionControl : ResoniteMod {
 				}
 				ui.NestInto(UserEntry);
 				ui.HorizontalLayout(1f);
-				AddFriendLinkButton(ui, entry.Key);
+				AddContactLinkButton(ui, entry.Key);
 				try {
 					if (ShowDebugInfo.Value) { //Role Override Name
 						AddLabel(ui, entry.Value.RoleName.Value + " [" + entry.Value + "]");
@@ -144,7 +144,7 @@ public class PermissionControl : ResoniteMod {
 			ui.NestOut();
 		}
 
-		public static void AddFriendLinkButton(UIBuilder ui, string user) {
+		public static void AddContactLinkButton(UIBuilder ui, string user) {
 			ui.Next("Button");
 			ui.Current.AttachComponent<Image>().Tint.Value = ui.Style.ButtonColor;
 			Button button = ui.Current.AttachComponent<Button>();
