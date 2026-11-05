@@ -24,7 +24,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.4.3" />
-		<PackageReference Include="ResoniteModLoader" Version="5.0.1" />
+		<PackageReference Include="ResoniteModLoader" Version="5.0.2" />
 		<Reference Include="FrooxEngine" HintPath="$(ResonitePath)FrooxEngine.dll" />
 		<Reference Include="Elements.Core" HintPath="$(ResonitePath)Elements.Core.dll" />
 		<Reference Include="Renderite.Shared" HintPath="$(ResonitePath)Renderite.Shared.dll" />
